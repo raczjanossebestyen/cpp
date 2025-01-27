@@ -1,0 +1,4 @@
+Listában tárolunk elemeket.
+Ezt a listát akarjuk az array_view-ban úgy eltárolni hogy azok azonnal elérhetőek legyenek.
+Ehhez meg is kell mondanunk hogy az array_view milyen adatszerkezetben tárolja el az elemeket.
+A többit szerintem ki tudod olvasni a kódból...mármint hogy milyen metódusokat kell elkészíteni.

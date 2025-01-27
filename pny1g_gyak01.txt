@@ -1,0 +1,24 @@
+oran nincs prgramozas
+vizsgan elmelet es zh lesz?
+opcionalis beadando
+
+imperativ feladatait lehet cpp-be is megoldani
+g++ compilert hasznal az oktato vim-mel
+vizsgan command line eszkozkkel forditani es elinditani kell
+
+-E -- forditas elotti lepes (preprocesszalas)-ban mit kapunk
+-W -Wall -- warningok megmutatasa
+pedantic -- ISO szabvany warningokat mutatja
+
+scott meyers - hatekony c++
+sorstrup konyv
+
+0: kod begepelese
+
+1: preprocesszalas (preprocesszor)
+2: nyelvi forditas(compiler)
+3: osszeszerkesztes (linker)
+
+4: futtatas
+
+ha #-gel kezdodik az a preprocesszalasnak szol

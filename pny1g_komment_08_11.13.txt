@@ -1,0 +1,285 @@
+#include <vector>
+#include <iostream>
+#include <algorithm>
+
+int main()
+{
+  std::vector<int> v;
+  int i;
+  while( std::cin >> i )
+  {
+    v.push_back( i );
+  }
+  //         [          )
+  std::sort( v.begin(), v.end() ); // STL algoritmus
+  for( i = 0; i < v.size(); ++i )
+  {
+    std::cout << v[ i ] << ' ';
+  }
+  std::endl( std::cout );
+}
+
+-------------------------
+
+#include <vector>
+#include <iostream>
+#include <algorithm>
+
+void print( const int& i )
+{
+  std::cout << i << ' ';
+}
+
+int main()
+{
+  std::vector<int> v;
+  int i;
+  while( std::cin >> i )
+  {
+    v.push_back( i );
+  }
+  //         [          )
+  std::sort( v.begin(), v.end() ); // STL algoritmus
+  std::for_each( v.begin(), v.end(), print );
+  std::endl( std::cout );
+}
+
+-------------------------
+
+#include <vector>
+#include <iterator>
+#include <iostream>
+#include <algorithm>
+
+void print( const int& i )
+{
+  std::cout << i << ' ';
+}
+
+int main()
+{
+  std::vector<int> v(
+    std::istream_iterator<int>( std::cin ), // std::cin.begin()
+    std::istream_iterator<int>() );         // std::cin.end()
+  //         [          )
+  std::sort( v.begin(), v.end() ); // STL algoritmus
+  std::for_each( v.begin(), v.end(), print );
+  std::endl( std::cout );
+}
+
+-------------------------
+
+#include <vector>
+#include <iterator>
+#include <iostream>
+#include <algorithm>
+
+int main()
+{
+  std::vector<int> v(
+    std::istream_iterator<int>( std::cin ), // std::cin.begin()
+    std::istream_iterator<int>() );         // std::cin.end()
+  //         [          )
+  std::sort( v.begin(), v.end() ); // STL algoritmus
+  std::copy( v.begin(), 
+             v.end(), 
+             std::ostream_iterator<int>( std::cout, " " ) );
+  std::endl( std::cout );
+}
+
+-------------------------
+
+#include <set>
+#include <algorithm>
+#include <iostream>
+#include <iterator>
+
+int main()
+{
+  std::multiset<int> m;
+  int i;
+  while( std::cin >> i )
+  {
+    m.insert( i );
+  }
+  std::copy( m.begin(),
+             m.end(),
+             std::ostream_iterator<int>( std::cout, " " ) );
+  std::endl( std::cout );
+}
+
+-------------------------
+
+#include <set>
+#include <algorithm>
+#include <iostream>
+#include <iterator>
+
+int main()
+{
+  std::multiset<int> m(
+    std::istream_iterator<int>( std::cin ),
+    std::istream_iterator<int>() );
+  std::copy( m.begin(),
+             m.end(),
+             std::ostream_iterator<int>( std::cout, " " ) );
+  std::endl( std::cout );
+}
+
+-------------------------
+
+#include <set>
+#include <iostream>
+#include <iterator>
+
+int main()
+{
+  std::multiset<char> stat(
+    std::istream_iterator<char>( std::cin ),
+    std::istream_iterator<char>() );
+  for( std::multiset<char>::iterator i = stat.begin();
+       i != stat.end();)
+  {
+    std::cout << *i << ": " 
+              << stat.count( *i ) 
+              << std::endl;
+    i = stat.upper_bound( *i );
+  }
+}
+
+-------------------------
+
+#include <set>
+#include <iostream>
+#include <iterator>
+
+inline double rate( int c, int a )
+{
+  return 100.0 * c / a;
+}
+
+int main()
+{
+  std::multiset<char> stat(
+    std::istream_iterator<char>( std::cin ),
+    std::istream_iterator<char>() );
+  for( std::multiset<char>::iterator i = stat.begin();
+       i != stat.end();)
+  {
+    int cnt = stat.count( *i );
+    std::cout << *i << ": " 
+              << cnt << " ("
+              << rate( cnt, stat.size() )
+              << "%)"
+              << std::endl;
+    i = stat.upper_bound( *i );
+  }
+}
+
+-------------------------
+
+#include <map>
+#include <iostream>
+#include <algorithm>
+
+
+void print( const std::pair<char, int>& p )
+{
+  std::cout << p.first << ": "
+            << p.second
+            << " "
+            << std::endl;
+}
+
+int main()
+{
+  std::map<char, int> stat;
+  char ch;
+  int all = 0;
+  while( std::cin >> ch )
+  {
+    ++stat[ ch ];
+    ++all;
+  }
+  std::for_each( stat.begin(), stat.end(), print );
+}
+
+-------------------------
+
+#include <map>
+#include <iostream>
+#include <algorithm>
+
+
+struct Print
+{
+  int all;
+
+  void operator()( const std::pair<char, int>& p )
+  {
+    std::cout << p.first << ": "
+              << p.second
+              << " ("
+              << 100.0 * p.second/ all
+              << "%)" << std::endl;
+  }
+
+};
+
+int main()
+{
+  std::map<char, int> stat;
+  char ch;
+  int all = 0;
+  while( std::cin >> ch )
+  {
+    ++stat[ ch ];
+    ++all;
+  }
+  Print print;
+  print.all = all;
+  std::for_each( stat.begin(), stat.end(), print );
+}
+
+-------------------------
+
+#include <map>
+#include <iostream>
+#include <algorithm>
+
+
+class Print
+{
+
+  int all;
+
+public:
+
+  Print( int i )
+  {
+    all = i;
+  }
+
+  void operator()( const std::pair<char, int>& p )
+  {
+    std::cout << p.first << ": "
+              << p.second
+              << " ("
+              << 100.0 * p.second/ all
+              << "%)" << std::endl;
+  }
+
+};
+
+int main()
+{
+  std::map<char, int> stat;
+  char ch;
+  int all = 0;
+  while( std::cin >> ch )
+  {
+    ++stat[ ch ];
+    ++all;
+  }
+  std::for_each( stat.begin(), stat.end(), Print( all ) );
+}

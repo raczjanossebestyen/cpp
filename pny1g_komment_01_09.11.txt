@@ -1,0 +1,67 @@
+0: kod begepelese
+----------------------------
+1: preprocesszalas (preprocesszor)
+2: nyelvi forditas (compiler)
+3: osszeszerkesztes (linker)
+-----------------------------------------
+futtatas
+
+
+$cat pperr.cpp 
+#BLABLABLA
+
+$g++ -E pperr.cpp
+pperr.cpp:1:2: error: invalid preprocessing directive #BLABLABLA
+    1 | #BLABLABLA
+      |  ^~~~~~~~~
+
+
+cat fac.cpp 
+#include <iostream>
+
+int main()
+{
+  std::cout << fac( 5 ) << std::endl;
+}
+-------------------------
+fac.cpp: In function ‘int main()’:
+fac.cpp:5:16: error: ‘fac’ was not declared in this scope
+    5 |   std::cout << fac( 5 ) << std::endl;
+      |                ^~~
+
+
+#include <iostream>
+
+int fac( int );
+
+int main()
+{
+  std::cout << fac( 5 ) << std::endl;
+}
+----------------------------------
+g++ -W -Wall -pedantic -ansi fac.cpp 
+/usr/bin/ld: /tmp/ccWxJ9WN.o: in function `main':
+fac.cpp:(.text+0xe): undefined reference to `fac(int)'
+collect2: error: ld returned 1 exit status
+
+
+1: cpp->cpp
+2: cpp->object
+3: objects -> executable
+
+
+#include <iostream>
+
+int main()
+{
+  int i = -4;
+  unsigned int j = 3;
+  if( i < j )
+  {
+    std::cout << "OK" << std::endl;
+  }
+  else
+  {
+    std::cout << "WTF?" << std::endl;
+  }
+}

@@ -1,0 +1,522 @@
+#include <iostream>
+
+int main()
+{
+  int x = 7;
+  int* p = &x;
+  std::cout << *p << std::endl;
+  *p = 13;
+  std::cout << x << std::endl;
+
+  int& r = x;
+  std::cout << r << std::endl;
+  r = 18;
+  std::cout << x << std::endl;
+}
+
+-------------------------
+
+#include <iostream>
+
+void inc( int i )
+{
+  ++i;
+}
+
+void incptr( int* p )
+{
+  if( p )
+  {
+    ++( *p );
+  }
+}
+
+void incref( int& r )
+{
+  ++r;
+}
+
+int main()
+{
+  int s = 7;
+  inc( s );
+  std::cout << s << std::endl;
+  incptr( &s );
+  std::cout << s << std::endl;
+  incref( s );
+  std::cout << s << std::endl;
+  incptr( 0 );
+  // incref( 0 ); // ford. hiba
+}
+
+-------------------------
+
+#include <iostream>
+
+int main()
+{
+  int x = 7;
+  int* p = &x;
+  std::cout << *p << std::endl;
+  *p = 13;
+  std::cout << x << std::endl;
+
+  int& r = x;
+  std::cout << r << std::endl;
+  r = 18;
+  std::cout << x << std::endl;
+
+  int y = 5;
+  p = &y;
+  *p = 3;
+  std::cout << y << std::endl;
+  p = 0;
+
+  int k = 14;
+  r = k;
+  std::cout << x << std::endl;
+  r = 0;
+  std::cout << x << std::endl;
+}
+
+-------------------------
+
+#include <iostream>
+
+int& f()
+{
+  int s = 55;
+  return s;
+}
+
+int main()
+{
+  int x = 7;
+  int* p = &x;
+  std::cout << *p << std::endl;
+  *p = 13;
+  std::cout << x << std::endl;
+
+  int& r = x;
+  std::cout << r << std::endl;
+  r = 18;
+  std::cout << x << std::endl;
+
+  int y = 5;
+  p = &y;
+  *p = 3;
+  std::cout << y << std::endl;
+  p = 0;
+
+  int k = 14;
+  r = k;
+  std::cout << x << std::endl;
+  r = 0;
+  std::cout << x << std::endl;
+  // int& ur; // ford. hiba
+  // int& n = 0; // ford. hiba
+  // std::cout << f() << std::endl; // segfault
+}
+
+-------------------------
+
+#include <iostream>
+#include <cstdio>
+
+int main()
+{
+  int x = 6;
+  int y = 3;
+  std::cout << x << y << x + y << std::endl;
+  std::cin >> x;
+  std::scanf( "%d", &x );
+}
+
+-------------------------
+
+#include <vector>
+#include <iostream>
+
+void f( std::vector<int> v )
+{
+  std::cout << &v[ 0 ] << ' ' << v.size() << std::endl;
+}
+
+void g( const std::vector<int>& v )
+{
+  std::cout << &v[ 0 ] << ' ' << v.size() << std::endl;
+}
+
+int main()
+{
+  std::vector<int> v( 88, 12 );
+  std::cout << &v[ 0 ] << ' ' << v.size() << std::endl;
+  f( v );
+  g( v );
+}
+
+-------------------------
+
+void f( int  );
+void g( int& );
+void h( const int& );
+
+int main()
+{
+  int s = 5;
+  f( s ); // s nem valt.
+  f( s + 6 );
+  f( 8 );
+  f( s++ );
+  f( ++s );
+
+  g( s ); // s valtozhat
+  // g( s + 3 ); // ford. hiba
+  // g( 5 );     // ford. hiba
+  // g( s++ );   // ford. hiba
+  g( ++s );
+
+  h( s ); // s nem valt.
+  h( s + 2 );
+  h( 5 );
+  h( s++ );
+  h( ++s );
+
+}
+
+-------------------------
+
+#include <iostream>
+
+struct Node
+{
+  int val;
+  Node *left, *right;
+};
+
+void print( const Node* n )
+{
+  if( n )
+  {
+    print( n->left );
+    std::cout << n->val << ' ';
+    print( n->right );
+  }
+}
+
+void insert( Node*& n, int v )
+{
+  if( n )
+  {
+    insert( v <= n->val ? n->left : n->right, v );
+  }
+  else
+  {
+    n = new Node();
+    n->val = v;
+    n->left = n->right = 0;
+  }
+}
+
+int main()
+{
+  int i;
+  Node* root = 0;
+  while( std::cin >> i )
+  {
+    insert( root, i );
+  }
+  print( root );
+  std::endl( std::cout );
+}
+
+-------------------------
+
+#include <iostream>
+
+struct Node
+{
+  int val;
+  Node *left, *right;
+};
+
+void print( const Node* n )
+{
+  if( n )
+  {
+    print( n->left );
+    std::cout << n->val << ' ';
+    print( n->right );
+  }
+}
+
+void insert( Node*& n, int v )
+{
+  if( n )
+  {
+    insert( v <= n->val ? n->left : n->right, v );
+  }
+  else
+  {
+    n = new Node();
+    n->val = v;
+    n->left = n->right = 0;
+  }
+}
+
+void dealloc( Node* n )
+{
+  if( n )
+  {
+    dealloc( n->left );
+    dealloc( n->right );
+    delete n;
+  }
+}
+
+int main()
+{
+  int i;
+  Node* root = 0;
+  while( std::cin >> i )
+  {
+    insert( root, i );
+  }
+  print( root );
+  std::endl( std::cout );
+  dealloc( root );
+}
+
+-------------------------
+
+#include <cstdio>
+
+struct Node
+{
+  int val;
+  Node *left, *right;
+};
+
+void print( const Node* n )
+{
+  if( n )
+  {
+    print( n->left );
+    std::printf( "%d ", n->val );
+    print( n->right );
+  }
+}
+
+void insert( Node*& n, int v )
+{
+  if( n )
+  {
+    insert( v <= n->val ? n->left : n->right, v );
+  }
+  else
+  {
+    n = new Node();
+    n->val = v;
+    n->left = n->right = 0;
+  }
+}
+
+void dealloc( Node* n )
+{
+  if( n )
+  {
+    dealloc( n->left );
+    dealloc( n->right );
+    delete n;
+  }
+}
+
+int main()
+{
+  int i;
+  Node* root = 0;
+  while( -1 != std::scanf( "%d", &i ) )
+  {
+    insert( root, i );
+  }
+  print( root );
+  std::printf( "\n" );
+  dealloc( root );
+}
+
+-------------------------
+
+#include <cstdio>
+#include <cstdlib>
+
+struct Node
+{
+  int val;
+  Node *left, *right;
+};
+
+void print( const Node* n )
+{
+  if( n )
+  {
+    print( n->left );
+    std::printf( "%d ", n->val );
+    print( n->right );
+  }
+}
+
+void insert( Node*& n, int v )
+{
+  if( n )
+  {
+    insert( v <= n->val ? n->left : n->right, v );
+  }
+  else
+  {
+    n = (Node*)std::malloc( sizeof( Node ) );
+    n->val = v;
+    n->left = n->right = 0;
+  }
+}
+
+void dealloc( Node* n )
+{
+  if( n )
+  {
+    dealloc( n->left );
+    dealloc( n->right );
+    std::free( n );
+  }
+}
+
+int main()
+{
+  int i;
+  Node* root = 0;
+  while( -1 != std::scanf( "%d", &i ) )
+  {
+    insert( root, i );
+  }
+  print( root );
+  std::printf( "\n" );
+  dealloc( root );
+}
+
+-------------------------
+
+#include <cstdio>
+#include <cstdlib>
+
+struct Node
+{
+  int val;
+  Node *left, *right;
+};
+
+void print( const Node* n )
+{
+  if( n )
+  {
+    print( n->left );
+    std::printf( "%d ", n->val );
+    print( n->right );
+  }
+}
+
+void insert( Node** n, int v )
+{
+  if( *n )
+  {
+    insert( v <= (*n)->val ? &(*n)->left : &(*n)->right, v );
+  }
+  else
+  {
+    *n = (Node*)std::malloc( sizeof( Node ) );
+    (*n)->val = v;
+    (*n)->left = (*n)->right = 0;
+  }
+}
+
+void dealloc( Node* n )
+{
+  if( n )
+  {
+    dealloc( n->left );
+    dealloc( n->right );
+    std::free( n );
+  }
+}
+
+int main()
+{
+  int i;
+  Node* root = 0;
+  while( -1 != std::scanf( "%d", &i ) )
+  {
+    insert( &root, i );
+  }
+  print( root );
+  std::printf( "\n" );
+  dealloc( root );
+}
+
+-------------------------
+
+#include <iostream>
+
+struct Node
+{
+  int val;
+  Node *left, *right;
+
+  Node( int i )
+  {
+    val = i;
+    left = right = 0;
+  }
+};
+
+void print( const Node* n )
+{
+  if( n )
+  {
+    print( n->left );
+    std::cout << n->val << ' ';
+    print( n->right );
+  }
+}
+
+void insert( Node*& n, int v )
+{
+  if( n )
+  {
+    insert( v <= n->val ? n->left : n->right, v );
+  }
+  else
+  {
+    n = new Node( v );
+  }
+}
+
+void dealloc( Node* n )
+{
+  if( n )
+  {
+    dealloc( n->left );
+    dealloc( n->right );
+    delete n;
+  }
+}
+
+int main()
+{
+  int i;
+  Node* root = 0;
+  while( std::cin >> i )
+  {
+    insert( root, i );
+  }
+  print( root );
+  std::endl( std::cout );
+  dealloc( root );
+}

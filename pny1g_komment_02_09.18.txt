@@ -1,0 +1,267 @@
+hello.c
+
+#include <stdio.h>
+
+int main()
+{
+  printf( "Hello World\n" );
+  return 0;
+}
+
+-------------------------
+
+hello.cpp
+
+#include <cstdio>
+
+int main()
+{
+  std::printf( "Hello World\n" );
+  return 0;
+}
+
+-------------------------
+
+cpphello.cpp
+
+#include <iostream>
+
+int main()
+{
+  std::cout << "Hello World"
+            << std::endl;
+}
+
+--------------------------------------
+
+#include <iostream>
+using namespace std;
+
+int main()
+{
+  cout << "Hello World" << endl;
+}
+
+-------------------------------------------
+
+#include <iostream>
+
+namespace A
+{
+
+  void f()
+  {
+    std::cout << "Hello from namespace"
+              << std::endl;
+  }
+
+}
+
+namespace B
+{
+
+  void f()
+  {
+  }
+
+}
+
+int main()
+{
+  A::f();
+}
+
+
+-------------------------------
+
+
+#include <iostream>
+
+namespace A
+{
+
+  void f()
+  {
+    std::cout << "Hello from namespace"
+              << std::endl;
+  }
+
+}
+
+namespace B
+{
+
+  void f()
+  {
+    std::cout << "B::f()" << std::endl;
+  }
+
+}
+
+using namespace B;
+int main()
+{
+  A::f();
+  f();
+}
+
+--------------------------------------
+
+#include <iostream>
+
+namespace X
+{
+
+  namespace Y
+  {
+
+    void f()
+    {
+      std::cout << "X::Y::f()" << std::endl;
+    }
+
+  }
+
+}
+
+int main()
+{
+  X::Y::f();
+}
+
+----------------------------------------
+
+#include <iostream>
+using std::cout;
+
+int main()
+{
+  cout << "Hello World" << std::endl;
+}
+
+----------------------------------
+
+#include <stdio.h>
+
+int main()
+{
+  int lower = -200;
+  int upper = 120;
+  int step = 10;
+  int i = lower;
+  for(; i <= upper; i += step )
+  {
+    printf( "%d Fahrenheit\t%f Celsius\n",
+            i,
+            5. / 9 * ( i - 32 ) );
+  }
+}
+
+-------------------------------------
+
+#include <stdio.h>
+#define LOWER -200
+#define UPPER 120
+#define STEP 10
+
+int main()
+{
+  int i = LOWER;
+  for(; i <= UPPER; i += STEP )
+  {
+    printf( "%d Fahrenheit\t%f Celsius\n",
+            i,
+            5. / 9 * ( i - 32 ) );
+  }
+}
+
+----------------------------------------
+
+#include <stdio.h>
+#define LOWER -200
+#define UPPER 120
+#define STEP 10
+#define FAHR2CELS(x) ( 5. / 9 * ( (x) - 32 ) )
+
+int main()
+{
+  int i = LOWER;
+  for(; i <= UPPER; i += STEP )
+  {
+    printf( "%d Fahrenheit\t%f Celsius\n",
+            i,
+            FAHR2CELS( i ) );
+  }
+}
+
+--------------------------------------
+
+#include <iostream>
+
+inline double fahr2cels( double d )
+{
+  return 5. / 9 * ( d - 32 );
+}
+
+int main()
+{
+  const int lower = -200;
+  const int upper = 120;
+  const int step = 10;
+
+  for( int i = lower; i <= upper; i += step )
+  {
+    std::cout << i << " Fahrenheit\t"
+              << fahr2cels( i )
+              << "Celsius"
+              << std::endl;
+  }
+}
+
+-------------------------------------
+
+fahr.cpp: In function ‘int main()’:
+fahr.cpp:13:8: error: assignment of read-only variable ‘step’
+   13 |   step += 10;
+      |   ~~~~~^~~~~
+patakino@pataki-latitude5300:~/cpp$ vim fahr.cpp 
+patakino@pataki-latitude5300:~/cpp$ g++ -W -Wall -pedantic -ansi fahr.cpp 
+fahr.cpp: In function ‘int main()’:
+fahr.cpp:13:3: error: increment of read-only variable ‘step’
+   13 |   step++;
+      |   ^~~~
+patakino@pataki-latitude5300:~/cpp$ vim fahr.cpp 
+patakino@pataki-latitude5300:~/cpp$ vim fahr.cpp 
+patakino@pataki-latitude5300:~/cpp$ g++ -W -Wall -pedantic -ansi fahr.cpp 
+fahr.cpp: In function ‘int main()’:
+fahr.cpp:13:12: error: invalid conversion from ‘const int*’ to ‘int*’ [-fpermissive]
+   13 |   int* p = &step;
+      |            ^~~~~
+      |            |
+      |            const int*
+
+---------------------------------------------
+
+#include <iostream>
+
+inline double fahr2cels( double d )
+{
+  return 5. / 9 * ( d - 32 );
+}
+
+int main()
+{
+  const int lower = -200;
+  const int upper = 120;
+  const int step = 10;
+  int* p = const_cast<int*>( &step );
+  *p = 20;
+
+  for( int i = lower; i <= upper; i += step )
+  {
+    std::cout << i << " Fahrenheit\t"
+              << fahr2cels( i )
+              << "Celsius"
+              << std::endl;
+  }
+}

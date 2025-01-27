@@ -1,0 +1,926 @@
+#include <iostream>
+
+template <class T>
+void swap( T& a, T& b )
+{
+  T c = a;
+  a = b;
+  b = c;
+}
+
+int main()
+{
+  int x = 7;
+  int y = 2;
+  swap( x, y );
+  std::cout << x << y << std::endl;
+}
+
+-------------------------
+
+#include <iostream>
+#include <string>
+
+template <class T>
+void swap( T& a, T& b )
+{
+  T c = a;
+  a = b;
+  b = c;
+}
+
+struct X
+{
+
+  int i;
+  std::string s;
+
+};
+
+int main()
+{
+  int x = 7;
+  int y = 2;
+  swap( x, y );
+  std::cout << x << y << std::endl;
+
+  double d = 1.23;
+  double e = 3.45;
+  swap( d, e );
+  std::cout << d << ' ' << e << std::endl;
+
+  X a;
+  X b;
+  a.i = 6; b.i = 1;
+  a.s = "abc"; b.s = "def";
+  swap( a, b );
+  std::cout << a.s << b.s << std::endl;
+}
+
+-------------------------
+
+#include <iostream>
+#include <string>
+
+template <class T>
+void swap_patakino( T& a, T& b )
+{
+  T c = a;
+  a = b;
+  b = c;
+}
+
+struct X
+{
+
+  int i;
+  std::string s;
+
+};
+
+int main()
+{
+  int x = 7;
+  int y = 2;
+  swap_patakino( x, y );
+  std::cout << x << y << std::endl;
+
+  double d = 1.23;
+  double e = 3.45;
+  swap_patakino( d, e );
+  std::cout << d << ' ' << e << std::endl;
+
+  X a;
+  X b;
+  a.i = 6; b.i = 1;
+  a.s = "abc"; b.s = "def";
+  swap_patakino( a, b );
+  std::cout << a.s << b.s << std::endl;
+  // swap_patakino( std::cout, std::cerr ); // ford. hiba
+}
+
+-------------------------
+
+#include "vector.h"
+#include <iostream>
+
+int main()
+{
+  Vector<int> v( 8 );
+  v.push_back( 4 );
+  std::cout << v.size() << std::endl;
+}
+
+-------------------------
+
+#ifndef VECTOR__H
+#define VECTOR__H
+
+template <class T>
+class Vector
+{
+
+  T* p;
+  int s, cap;
+
+public:
+
+  Vector( int );
+  ~Vector();
+
+
+  int size() const
+  {
+    return s;
+  }
+
+
+  void push_back( const T& );
+
+};
+
+
+template <class T>
+Vector<T>::Vector( int c )
+{
+  cap = c;
+  s = 0;
+  p = new T[ cap ];
+}
+
+
+template <class T>
+Vector<T>::~Vector()
+{
+  delete [] p;
+}
+
+
+template <class T>
+void Vector<T>::push_back( const T& t )
+{
+  if( s == cap )
+  {
+    cap *= 2;
+    T* q = new T[ cap ];
+    for( int i = 0; i < s; ++i )
+    {
+      q[ i ] = p[ i ];
+    }
+    delete [] p;
+    p = q;
+  }
+  p[ s++ ] = t;
+}
+
+
+#endif
+
+-------------------------
+
+#ifndef VECTOR__H
+#define VECTOR__H
+
+template <class T>
+class Vector
+{
+
+  T* p;
+  int s, cap;
+
+public:
+
+  Vector( int );
+  ~Vector();
+
+
+  int size() const
+  {
+    return s;
+  }
+
+
+  void push_back( const T& );
+
+
+  const T& operator[]( int idx ) const;
+
+};
+
+
+template <class T>
+Vector<T>::Vector( int c )
+{
+  cap = c;
+  s = 0;
+  p = new T[ cap ];
+}
+
+
+template <class T>
+Vector<T>::~Vector()
+{
+  delete [] p;
+}
+
+
+template <class T>
+void Vector<T>::push_back( const T& t )
+{
+  if( s == cap )
+  {
+    cap *= 2;
+    T* q = new T[ cap ];
+    for( int i = 0; i < s; ++i )
+    {
+      q[ i ] = p[ i ];
+    }
+    delete [] p;
+    p = q;
+  }
+  p[ s++ ] = t;
+}
+
+
+template <class T>
+const T& Vector<T>::operator[]( int idx ) const
+{
+  return p[ idx ];
+}
+
+#endif
+
+-------------------------
+
+#include "vector.h"
+#include <iostream>
+
+int main()
+{
+  const int max = 52;
+  Vector<int> v( 8 );
+  for( int i = 0; i < max; ++i )
+  {
+    v.push_back( i );
+  }
+  std::cout << v.size() << std::endl;
+  for( int i = 0; i < v.size(); ++i )
+  {
+    std::cout << v[ i ] << ' ';
+  }
+  std::endl( std::cout );
+}
+
+-------------------------
+
+#ifndef VECTOR__H
+#define VECTOR__H
+
+template <class T>
+class Vector
+{
+
+  T* p;
+  int s, cap;
+
+public:
+
+  Vector( int );
+  ~Vector();
+
+
+  int size() const
+  {
+    return s;
+  }
+
+
+  void push_back( const T& );
+
+
+  const T& operator[]( int idx ) const;
+  T& operator[]( int idx );
+
+};
+
+
+template <class T>
+Vector<T>::Vector( int c )
+{
+  cap = c;
+  s = 0;
+  p = new T[ cap ];
+}
+
+
+template <class T>
+Vector<T>::~Vector()
+{
+  delete [] p;
+}
+
+
+template <class T>
+void Vector<T>::push_back( const T& t )
+{
+  if( s == cap )
+  {
+    cap *= 2;
+    T* q = new T[ cap ];
+    for( int i = 0; i < s; ++i )
+    {
+      q[ i ] = p[ i ];
+    }
+    delete [] p;
+    p = q;
+  }
+  p[ s++ ] = t;
+}
+
+
+template <class T>
+const T& Vector<T>::operator[]( int idx ) const
+{
+  return p[ idx ];
+}
+
+
+template <class T>
+T& Vector<T>::operator[]( int idx )
+{
+  return p[ idx ];
+}
+
+#endif
+
+-------------------------
+
+#include "vector.h"
+#include <iostream>
+
+int main()
+{
+  const int max = 52;
+  Vector<int> v( 8 );
+  for( int i = 0; i < max; ++i )
+  {
+    v.push_back( i );
+  }
+  v[ 0 ] = 7;
+  v[ 1 ] = 65;
+  v[ 2 ] += 12;
+  std::cout << v.size() << std::endl;
+  for( int i = 0; i < v.size(); ++i )
+  {
+    std::cout << v[ i ] << ' ';
+  }
+  std::endl( std::cout );
+}
+
+-------------------------
+
+#ifndef VECTOR__H
+#define VECTOR__H
+
+template <class T>
+class Vector
+{
+
+  T* p;
+  int s, cap;
+
+public:
+
+  Vector( int );
+  ~Vector();
+  Vector( const Vector<T>& );
+  Vector<T>& operator=( const Vector<T>& );
+
+
+  int size() const
+  {
+    return s;
+  }
+
+
+  void push_back( const T& );
+
+
+  const T& operator[]( int idx ) const;
+  T& operator[]( int idx );
+
+};
+
+
+template <class T>
+Vector<T>::Vector( int c )
+{
+  cap = c;
+  s = 0;
+  p = new T[ cap ];
+}
+
+
+template <class T>
+Vector<T>::~Vector()
+{
+  delete [] p;
+}
+
+
+template <class T>
+void Vector<T>::push_back( const T& t )
+{
+  if( s == cap )
+  {
+    cap *= 2;
+    T* q = new T[ cap ];
+    for( int i = 0; i < s; ++i )
+    {
+      q[ i ] = p[ i ];
+    }
+    delete [] p;
+    p = q;
+  }
+  p[ s++ ] = t;
+}
+
+
+template <class T>
+const T& Vector<T>::operator[]( int idx ) const
+{
+  return p[ idx ];
+}
+
+
+template <class T>
+T& Vector<T>::operator[]( int idx )
+{
+  return p[ idx ];
+}
+
+
+template <class T>
+Vector<T>::Vector( const Vector<T>& rhs )
+{
+  cap = rhs.cap;
+  s = rhs.s;
+  p = new T[ cap ];
+  for( int i = 0; i < rhs.s; ++i )
+  {
+    p[ i ] = rhs.p[ i ];
+  }
+}
+
+
+template <class T>
+Vector<T>& Vector<T>::operator=( const Vector<T>& rhs )
+{
+  if ( this != &rhs )
+  {
+    delete [] p;
+    cap = rhs.cap;
+    s = rhs.s;
+    p = new T[ cap ];
+    for( int i = 0; i < rhs.s; ++i )
+    {
+      p[ i ] = rhs.p[ i ];
+    }
+  }
+  return *this;
+}
+
+#endif
+
+-------------------------
+
+#include "vector.h"
+#include <iostream>
+
+int main()
+{
+  const int max = 52;
+  Vector<int> v( 8 );
+  for( int i = 0; i < max; ++i )
+  {
+    v.push_back( i );
+  }
+  const Vector<int> cv = v;
+  std::cout << cv[ 0 ] << std::endl;
+  // cv[ 0 ] = 7; // ford. hiba
+  v[ 0 ] = 7;
+  v[ 1 ] = 65;
+  v[ 2 ] += 12;
+  std::cout << v.size() << std::endl;
+  for( int i = 0; i < v.size(); ++i )
+  {
+    std::cout << v[ i ] << ' ';
+  }
+  v = cv; // v.operator=( cv );
+  std::endl( std::cout );
+  for( int i = 0; i < cv.size(); ++i )
+  {
+    std::cout << cv[ i ] << ' ';
+  }
+  std::endl( std::cout );
+  for( int i = 0; i < v.size(); ++i )
+  {
+    std::cout << v[ i ] << ' ';
+  }
+  std::endl( std::cout );
+}
+
+-------------------------
+
+#ifndef VECTOR__H
+#define VECTOR__H
+
+template <class T>
+class Vector
+{
+
+  T* p;
+  int s, cap;
+
+public:
+
+  Vector( int );
+  ~Vector();
+  Vector( const Vector<T>& );
+  Vector<T>& operator=( const Vector<T>& );
+
+
+  int size() const
+  {
+    return s;
+  }
+
+
+  void push_back( const T& );
+
+
+  const T& operator[]( int idx ) const;
+  T& operator[]( int idx );
+
+};
+
+
+template <class T>
+Vector<T>::Vector( int c )
+{
+  cap = c;
+  s = 0;
+  p = new T[ cap ];
+}
+
+
+template <class T>
+Vector<T>::~Vector()
+{
+  delete [] p;
+}
+
+
+template <class T>
+void Vector<T>::push_back( const T& t )
+{
+  if( s == cap )
+  {
+    cap *= 2;
+    T* q = new T[ cap ];
+    for( int i = 0; i < s; ++i )
+    {
+      q[ i ] = p[ i ];
+    }
+    delete [] p;
+    p = q;
+  }
+  p[ s++ ] = t;
+}
+
+
+template <class T>
+const T& Vector<T>::operator[]( int idx ) const
+{
+  return p[ idx ];
+}
+
+
+template <class T>
+T& Vector<T>::operator[]( int idx )
+{
+  return p[ idx ];
+}
+
+
+template <class T>
+Vector<T>::Vector( const Vector<T>& rhs )
+{
+  cap = rhs.cap;
+  s = rhs.s;
+  p = new T[ cap ];
+  for( int i = 0; i < rhs.s; ++i )
+  {
+    p[ i ] = rhs.p[ i ];
+  }
+}
+
+
+template <class T>
+Vector<T>& Vector<T>::operator=( const Vector<T>& rhs )
+{
+  if ( this != &rhs )
+  {
+    delete [] p;
+    cap = rhs.cap;
+    s = rhs.s;
+    p = new T[ cap ];
+    for( int i = 0; i < rhs.s; ++i )
+    {
+      p[ i ] = rhs.p[ i ];
+    }
+  }
+  return *this;
+}
+
+#endif
+
+-------------------------
+
+#include "vector.h"
+#include <iostream>
+#include <string>
+
+struct Foo
+{
+
+  std::string a, b;
+
+};
+
+int main()
+{
+  const int max = 52;
+  Vector<int> v( 8 );
+  for( int i = 0; i < max; ++i )
+  {
+    v.push_back( i );
+  }
+  const Vector<int> cv = v;
+  std::cout << cv[ 0 ] << std::endl;
+  // cv[ 0 ] = 7; // ford. hiba
+  v[ 0 ] = 7;
+  v[ 1 ] = 65;
+  v[ 2 ] += 12;
+  std::cout << v.size() << std::endl;
+  for( int i = 0; i < v.size(); ++i )
+  {
+    std::cout << v[ i ] << ' ';
+  }
+  v = cv; // v.operator=( cv );
+  std::endl( std::cout );
+  for( int i = 0; i < cv.size(); ++i )
+  {
+    std::cout << cv[ i ] << ' ';
+  }
+  std::endl( std::cout );
+  for( int i = 0; i < v.size(); ++i )
+  {
+    std::cout << v[ i ] << ' ';
+  }
+  std::endl( std::cout );
+  Vector<double> vd( 2 );
+  vd.push_back( 12.34 );
+  vd.push_back( 56.67 );
+  vd.push_back( 8.9 );
+  for( int i = 0; i < vd.size(); ++i )
+  {
+    std::cout << vd[ i ] << ' ';
+  }
+  std::endl( std::cout );
+
+  Vector<std::string> vs( 5 );
+  vs.push_back( "kukumuku" );
+
+  Vector<Foo> vf( 4 );
+  Foo f; f.a = "Hello"; f.b = "World";
+  vf.push_back( f );
+  std::cout << vf[ 0 ].b << std::endl;
+}
+
+-------------------------
+
+#ifndef VECTOR__H
+#define VECTOR__H
+
+template <class T>
+class Vector
+{
+
+  T* p;
+  int s, cap;
+
+public:
+
+  typedef T* iterator;
+
+  Vector( int );
+  ~Vector();
+  Vector( const Vector<T>& );
+  Vector<T>& operator=( const Vector<T>& );
+
+
+  int size() const
+  {
+    return s;
+  }
+
+
+  void push_back( const T& );
+
+
+  const T& operator[]( int idx ) const;
+  T& operator[]( int idx );
+
+
+  iterator begin()
+  {
+    return p;
+  }
+
+
+  iterator end()
+  {
+    return p + s;
+  }
+
+};
+
+
+template <class T>
+Vector<T>::Vector( int c )
+{
+  cap = c;
+  s = 0;
+  p = new T[ cap ];
+}
+
+
+template <class T>
+Vector<T>::~Vector()
+{
+  delete [] p;
+}
+
+
+template <class T>
+void Vector<T>::push_back( const T& t )
+{
+  if( s == cap )
+  {
+    cap *= 2;
+    T* q = new T[ cap ];
+    for( int i = 0; i < s; ++i )
+    {
+      q[ i ] = p[ i ];
+    }
+    delete [] p;
+    p = q;
+  }
+  p[ s++ ] = t;
+}
+
+
+template <class T>
+const T& Vector<T>::operator[]( int idx ) const
+{
+  return p[ idx ];
+}
+
+
+template <class T>
+T& Vector<T>::operator[]( int idx )
+{
+  return p[ idx ];
+}
+
+
+template <class T>
+Vector<T>::Vector( const Vector<T>& rhs )
+{
+  cap = rhs.cap;
+  s = rhs.s;
+  p = new T[ cap ];
+  for( int i = 0; i < rhs.s; ++i )
+  {
+    p[ i ] = rhs.p[ i ];
+  }
+}
+
+
+template <class T>
+Vector<T>& Vector<T>::operator=( const Vector<T>& rhs )
+{
+  if ( this != &rhs )
+  {
+    delete [] p;
+    cap = rhs.cap;
+    s = rhs.s;
+    p = new T[ cap ];
+    for( int i = 0; i < rhs.s; ++i )
+    {
+      p[ i ] = rhs.p[ i ];
+    }
+  }
+  return *this;
+}
+
+#endif
+
+-------------------------
+
+#include "vector.h"
+#include <algorithm>
+#include <iostream>
+#include <string>
+
+struct Foo
+{
+
+  std::string a, b;
+
+};
+
+
+bool f( int a, int b )
+{
+  return a > b;
+}
+
+
+struct Comp
+{
+
+  bool operator()( int a, int b ) const
+  {
+    return a > b;
+  }
+
+};
+
+
+int main()
+{
+  const int max = 52;
+  Vector<int> v( 8 );
+  for( int i = 0; i < max; ++i )
+  {
+    v.push_back( i );
+  }
+  const Vector<int> cv = v;
+  std::cout << cv[ 0 ] << std::endl;
+  // cv[ 0 ] = 7; // ford. hiba
+  v[ 0 ] = 7;
+  v[ 1 ] = 65;
+  v[ 2 ] += 12;
+  std::sort( v.begin(), v.end(), f );
+  std::sort( v.begin(), v.end(), Comp() );
+  std::cout << v.size() << std::endl;
+  for( int i = 0; i < v.size(); ++i )
+  {
+    std::cout << v[ i ] << ' ';
+  }
+  v = cv; // v.operator=( cv );
+  std::endl( std::cout );
+  for( int i = 0; i < cv.size(); ++i )
+  {
+    std::cout << cv[ i ] << ' ';
+  }
+  std::endl( std::cout );
+  for( int i = 0; i < v.size(); ++i )
+  {
+    std::cout << v[ i ] << ' ';
+  }
+  std::endl( std::cout );
+  Vector<double> vd( 2 );
+  vd.push_back( 12.34 );
+  vd.push_back( 56.67 );
+  vd.push_back( 8.9 );
+  Vector<double>::iterator i = vd.begin() + 1;
+  *i = 123.4;
+  ++i;
+  *i = 0.89;
+  for( int i = 0; i < vd.size(); ++i )
+  {
+    std::cout << vd[ i ] << ' ';
+  }
+  std::endl( std::cout );
+
+  Vector<std::string> vs( 5 );
+  vs.push_back( "kukumuku" );
+
+  Vector<Foo> vf( 4 );
+  Foo f; f.a = "Hello"; f.b = "World";
+  vf.push_back( f );
+  std::cout << vf[ 0 ].b << std::endl;
+}

@@ -1,0 +1,329 @@
+#include <iostream>
+#include <string>
+
+class safe_string
+{
+
+  std::string s;
+
+public:
+
+  safe_string( const char* p ): s( p ? p : "" ) { }
+
+  int size() const
+  {
+    return s.size();
+  }
+
+  void push_back( char c )
+  {
+    s.push_back( c );
+  }
+
+};
+
+int main()
+{
+  safe_string s( "blabla" );
+  std::cout << s.size() << std::endl;
+
+  safe_string t( 0 );
+  t.push_back( '!' );
+  std::cout << t.size() << std::endl;
+}
+
+-------------------------
+
+#include <iostream>
+#include <string>
+
+class safe_string: public std::string
+{
+
+public:
+
+  safe_string( const char* p ): std::string( p ? p : "" ) { }
+
+};
+
+int main()
+{
+  safe_string s( "blabla" );
+  std::cout << s.size() << std::endl;
+  std::cout << s[ 1 ] << std::endl;
+
+  safe_string t( 0 );
+  t += "Hello";
+  t.push_back( '!' );
+  std::cout << t.size() << std::endl;
+}
+
+-------------------------
+
+#include <iostream>
+#include <string>
+
+struct safe_string: std::string
+{
+
+  safe_string( const char* p ): std::string( p ? p : "" ) { }
+
+};
+
+int main()
+{
+  safe_string s( "blabla" );
+  std::cout << s.size() << std::endl;
+  std::cout << s[ 1 ] << std::endl;
+
+  safe_string t( 0 );
+  t += "Hello";
+  t.push_back( '!' );
+  std::cout << t.size() << std::endl;
+}
+
+-------------------------
+
+#include <iostream>
+
+class Base
+{
+
+public:
+
+  virtual void f() const
+  {
+    std::cout << "Base::f()" << std::endl;
+  }
+
+  virtual ~Base() { }
+
+};
+
+
+class Der: public Base
+{
+
+public:
+
+  virtual void f() const
+  {
+    std::cout << "Der::f()" << std::endl;
+  }
+
+  virtual ~Der() { }
+
+};
+
+int main()
+{
+  Base* p = 0;
+  p = new Base();
+  p->f();
+  delete p;
+  p = new Der();
+  p->f();
+  delete p;
+}
+
+-------------------------
+
+#include <iostream>
+
+class X
+{
+
+public:
+
+  X( int i ) { i = 5; }
+
+  virtual void f() { }
+
+  void g( int ) { std::cout << "Hello" << std::endl; } 
+
+};
+
+int main()
+{
+  std::cout << sizeof( X ) << std::endl;
+}
+
+-------------------------
+
+#include "baseder.h"
+
+void fun( Base* );
+
+struct Foo: Base
+{
+
+  virtual ~Foo() { }
+
+  void f() const 
+  { 
+    std::cout << "Foo::f()" << std::endl;
+  }
+
+};
+
+int main()
+{
+  Base* p = 0;
+  p = new Base();
+  fun( p );
+  delete p;
+  Base b;
+  b.f();
+  p = new Der();
+  fun( p );
+  delete p;
+  Der d;
+  d.f();
+  p = new Foo();
+  fun( p );
+  delete p;
+  Foo foo;
+  foo.f();
+}
+
+-------------------------
+
+#include "baseder.h"
+
+void fun( Base* );
+
+struct Foo: Base
+{
+
+  virtual ~Foo() { }
+
+  void f() const
+  { 
+    std::cout << "Foo::f()" << std::endl;
+  }
+
+};
+
+int main()
+{
+  Base* p = 0;
+  p = new Base();
+  fun( p );
+  delete p;
+  Base b;
+  b.f();
+  p = new Der();
+  fun( p );
+  delete p;
+  Der d;
+  d.f();
+  p = new Foo();
+  fun( p );
+  delete p;
+  Foo foo;
+  foo.f();
+}
+
+-------------------------
+
+#include "baseder.h"
+
+void fun( Base& );
+
+struct Foo: Base
+{
+
+  ~Foo() { std::cout << "Foo dtor" << std::endl; }
+
+  void f() const
+  { 
+    std::cout << "Foo::f()" << std::endl;
+  }
+
+};
+
+int main()
+{
+  Base* p = 0;
+  p = new Base();
+  fun( *p );
+  delete p;
+  Base b;
+  b.f();
+  p = new Der();
+  fun( *p );
+  delete p;
+  Der d;
+  d.f();
+  p = new Foo();
+  fun( *p );
+  delete p;
+  Foo foo;
+  foo.f();
+}
+
+-------------------------
+
+#include <iostream>
+
+class Shape
+{
+private:
+
+  int color;
+
+public:
+
+  Shape( int c ): color( c ) { }
+
+
+  virtual ~Shape() { }
+
+
+  virtual double area() const = 0;
+
+  
+  int get_color() const
+  {
+    return color;
+  }
+
+};
+
+
+class Circle: public Shape
+{
+
+  double rad;
+
+public:
+
+
+  Circle( int c, double r) : Shape( c ), rad( r ) { }
+
+
+  virtual ~Circle() { }
+
+
+  virtual double area() const
+  {
+    return rad * rad * 3.14;
+  }
+
+
+  int get_color() const
+  {
+    return -1;
+  }
+
+};
+
+
+int main()
+{
+  Shape* s = new Circle( 12, 3.4 );
+  std::cout << s->get_color() << ' ' << s->area() << std::endl;
+  delete s;
+  Circle c( 12, 3.4 );
+  std::cout << c.get_color() << ' ' << c.area() << std::endl;
+}

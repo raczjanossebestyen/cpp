@@ -1,0 +1,317 @@
+// Java :O
+X a;
+a = new X();
+X b = a; // 1 objektum 2 hivatkozassal
+-------------------------------
+// C++
+X a;
+X b = a; // 2 objektum
+X* p = new X();
+delete p;
+
+-------------------------
+
+#ifndef COMPLEX_IMPL__H
+#define COMPLEX_IMPL__H
+
+class complex_impl
+{
+
+  double re, im;
+
+public:
+
+  complex_impl( double, double );
+
+  double abs() const;
+  void set_re( double );
+  void set_im( double );
+
+};
+
+#endif
+
+-------------------------
+
+#include "complex_impl.h"
+#include <cmath>
+
+complex_impl::complex_impl( double r, double i )
+{
+  re = r;
+  im = i;
+}
+
+
+double complex_impl::abs() const
+{
+  return std::sqrt( re * re + im * im );
+}
+
+
+void complex_impl::set_re( double d )
+{
+  re = d;
+}
+
+
+void complex_impl::set_im( double d )
+{
+  im = d;
+}
+
+-------------------------
+
+#ifndef COMPLEX__H
+#define COMPLEX__H
+
+class complex_impl;
+
+class complex
+{
+
+  complex_impl* p;
+
+public:
+
+  complex( double, double );
+
+  double abs() const;
+  void set_re( double );
+  void set_im( double );
+
+};
+
+#endif
+
+-------------------------
+
+#include "complex.h"
+#include "complex_impl.h"
+
+complex::complex( double r, double i )
+{
+  p = new complex_impl( r, i );
+}
+
+
+double complex::abs() const
+{
+  return p->abs();
+}
+
+
+void complex::set_re( double d )
+{
+  p->set_re( d );
+}
+
+
+void complex::set_im( double d )
+{
+  p->set_im( d );
+}
+
+-------------------------
+
+#include <iostream>
+#include "complex.h"
+
+int main()
+{
+  complex c( 1.2, 3.4 );
+  int i = 3;
+  std::cout << &c << std::endl << &i << std::endl;
+  std::cout << c.abs() << std::endl;
+}
+
+-------------------------
+
+#ifndef COMPLEX_IMPL__H
+#define COMPLEX_IMPL__H
+
+class complex_impl
+{
+
+  double re, im;
+
+public:
+
+  complex_impl( double, double );
+
+  double abs() const;
+  void set_re( double );
+  void set_im( double );
+
+};
+
+#endif
+
+-------------------------
+
+#include "complex_impl.h"
+#include <cmath>
+
+complex_impl::complex_impl( double r, double i )
+{
+  re = r;
+  im = i;
+}
+
+
+double complex_impl::abs() const
+{
+  return std::sqrt( re * re + im * im );
+}
+
+
+void complex_impl::set_re( double d )
+{
+  re = d;
+}
+
+
+void complex_impl::set_im( double d )
+{
+  im = d;
+}
+
+-------------------------
+
+#ifndef COMPLEX__H
+#define COMPLEX__H
+
+class complex_impl;
+
+class complex
+{
+
+  complex_impl* p;
+
+public:
+
+  complex( double, double );
+  complex( const complex& );
+  complex& operator=( const complex& );
+  ~complex();
+
+  double abs() const;
+  void set_re( double );
+  void set_im( double );
+
+};
+
+#endif
+
+-------------------------
+
+#include "complex.h"
+#include "complex_impl.h"
+
+complex::complex( double r, double i )
+{
+  p = new complex_impl( r, i );
+}
+
+
+complex::complex( const complex& rhs )
+{
+  p = new complex_impl( *( rhs.p ) );
+}
+
+
+complex::~complex()
+{
+  delete p;
+}
+
+
+complex& complex::operator=( const complex& rhs )
+{
+  *p = *( rhs.p );
+  return *this;
+}
+
+
+double complex::abs() const
+{
+  return p->abs();
+}
+
+
+void complex::set_re( double d )
+{
+  p->set_re( d );
+}
+
+
+void complex::set_im( double d )
+{
+  p->set_im( d );
+}
+
+-------------------------
+
+#include <iostream>
+#include "complex.h"
+
+int main()
+{
+  complex c( 1.2, 3.4 );
+  int i = 3;
+  std::cout << &c << std::endl << &i << std::endl;
+  std::cout << c.abs() << std::endl;
+  complex d = c; // complex d( c );
+  std::cout << d.abs() << std::endl;
+  d.set_re( 5.6 );
+  std::cout << c.abs() << std::endl;
+  std::cout << d.abs() << std::endl;
+  c = d; // c.operator=( d );
+  std::cout << c.abs() << std::endl;
+  d.set_re( 12.34 );
+  std::cout << c.abs() << std::endl;
+  std::cout << d.abs() << std::endl;
+}
+
+-------------------------
+
+#include <iostream>
+#include <vector>
+#include <list>
+#include <map>
+
+class Foo
+{
+
+public:
+
+  Foo( int i = 722 ) { std::cout << "Def. ctor: "  << i << std::endl; }
+  Foo( const Foo& rhs ) { std::cout << "Copy ctor" << std::endl; }
+  ~Foo() { std::cout << "Dtor" << std::endl; }
+
+};
+
+void g( Foo f )
+{
+  std::cout << &f << std::endl;
+}
+
+
+int main()
+{
+  const int max = 40;
+  Foo a(); // nem def. ctor
+  Foo b;
+  Foo s[ 4 ];
+  //std::vector<Foo> vec( 71 );
+
+  std::map<int, Foo> m;
+  m[ 4 ];
+  g( b );
+  //std::vector<Foo> vec;
+  std::list<Foo> vec;
+  for( int i = 0; i < max; ++i )
+  {
+    vec.push_back( Foo( 111 ) );
+  }
+}

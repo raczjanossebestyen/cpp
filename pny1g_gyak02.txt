@@ -1,0 +1,10 @@
+nevter
+    C azt mondja h minden fuggvenynev egyedi
+        ezert prefixek, pl opengl a glCreateProgram fvnevben a gl elotagot hasznalja mindig
+    
+    C++-ban ezert:
+        minositett nevek, tehat glCreateProgram helyett gl::CreateProgram akar hsznalhato (pelda a teams chatben)
+
+using namespace hova?
+
+utolso peldanal noha atirjuk a pointernel a stepet, de mivel kesobb a step-re hivatkozunk, ezert a lepesszamlalo 10en marad

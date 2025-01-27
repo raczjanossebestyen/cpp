@@ -1,0 +1,424 @@
+// T -> d
+// b -> I
+// w -> N
+
+char conv( char ch )
+{
+  switch( ch )
+  {
+    case 'T': return 'd'; break;
+    case 'b': return 'I'; break;
+    case 'w': return 'N'; break;
+    default: return ch; break;
+  }
+}
+
+-------------------------
+
+// T -> d
+// b -> I
+// w -> N
+
+char conv( char ch )
+{
+  static const char from[] = { 'T', 'b', 'w' };
+  static const char to[]   = { 'd', 'I', 'N' };
+
+  for( unsigned int i = 0; i < sizeof( from ) / sizeof( from[ 0 ] ); ++i )
+  {
+    if( from[ i ] == ch )
+    {
+      return to[ i ];
+    }
+  }
+  return ch;
+}
+
+-------------------------
+
+// T -> d
+// b -> I
+// w -> N
+
+struct Pair
+{
+  char from;
+  char to;
+};
+
+char conv( char ch )
+{
+  static const Pair cnv[] = { { 'T', 'd' },
+                              { 'b', 'I' },
+                              { 'w', 'N' } };
+
+  for( unsigned int i = 0; i < sizeof( cnv ) / sizeof( cnv[ 0 ] ); ++i )
+  {
+    if( cnv[ i ].from == ch )
+    {
+      return cnv[ i ].to;
+    }
+  }
+  return ch;
+}
+
+-------------------------
+
+// T -> d
+// b -> I
+// w -> N
+
+struct Pair
+{
+  char from;
+  char to;
+
+  Pair( char f, char t )
+  {
+    from = f;
+    to = t;
+  }
+};
+
+char conv( char ch )
+{
+  static const Pair cnv[] = { Pair( 'T', 'd' ),
+                              Pair( 'b', 'I' ),
+                              Pair( 'w', 'N' ) };
+
+  for( unsigned int i = 0; i < sizeof( cnv ) / sizeof( cnv[ 0 ] ); ++i )
+  {
+    if( cnv[ i ].from == ch )
+    {
+      return cnv[ i ].to;
+    }
+  }
+  return ch;
+}
+
+-------------------------
+
+// T -> d
+// b -> I
+// w -> N
+
+struct CharFrom
+{
+  char ch;
+
+  CharFrom( char c )
+  {
+    ch = c;
+  }
+};
+
+struct CharTo
+{
+  char ch;
+
+  CharTo( char c )
+  {
+    ch = c;
+  }
+};
+
+struct Pair
+{
+  CharFrom from;
+  CharTo to;
+
+  Pair( CharFrom f, CharTo t ): from( f ), to( t ) 
+  {
+  }
+};
+
+char conv( char ch )
+{
+  static const Pair cnv[] = { Pair( 'T', 'd' ),
+                              Pair( 'b', 'I' ),
+                              Pair( 'w', 'N' ) };
+
+  for( unsigned int i = 0; i < sizeof( cnv ) / sizeof( cnv[ 0 ] ); ++i )
+  {
+    if( cnv[ i ].from.ch == ch )
+    {
+      return cnv[ i ].to.ch;
+    }
+  }
+  return ch;
+}
+
+-------------------------
+
+// T -> d
+// b -> I
+// w -> N
+
+struct CharFrom
+{
+  char ch;
+
+  explicit CharFrom( char c )
+  {
+    ch = c;
+  }
+};
+
+struct CharTo
+{
+  char ch;
+
+  explicit CharTo( char c )
+  {
+    ch = c;
+  }
+};
+
+struct Pair
+{
+  CharFrom from;
+  CharTo to;
+
+  Pair( CharFrom f, CharTo t ): from( f ), to( t ) 
+  {
+  }
+};
+
+char conv( char ch )
+{
+  static const Pair cnv[] = { Pair( CharFrom( 'T' ), CharTo( 'd' ) ),
+                              Pair( CharFrom( 'b' ), CharTo( 'I' ) ),
+                              Pair( CharFrom( 'w' ), CharTo( 'N' ) ) };
+
+  for( unsigned int i = 0; i < sizeof( cnv ) / sizeof( cnv[ 0 ] ); ++i )
+  {
+    if( cnv[ i ].from.ch == ch )
+    {
+      return cnv[ i ].to.ch;
+    }
+  }
+  return ch;
+}
+
+-------------------------
+
+// T -> d
+// b -> I
+// w -> N
+
+struct CharFrom
+{
+  char ch;
+
+  explicit CharFrom( char c )
+  {
+    ch = c;
+  }
+};
+
+struct CharTo
+{
+  char ch;
+
+  explicit CharTo( char c )
+  {
+    ch = c;
+  }
+};
+
+struct Pair
+{
+  CharFrom from;
+  CharTo to;
+
+  Pair( CharFrom f, CharTo t ): from( f ), to( t ) 
+  {
+  }
+};
+
+char conv( char ch )
+{
+  static const Pair cnv[] = { Pair( CharFrom( 'T' ), CharTo( 'd' ) ),
+                              Pair( CharFrom( 'b' ), CharTo( 'I' ) ),
+                              Pair( CharFrom( 'w' ), CharTo( 'N' ) ) };
+
+  for( unsigned int i = 0; i < sizeof( cnv ) / sizeof( cnv[ 0 ] ); ++i )
+  {
+    if( cnv[ i ].from.ch == ch )
+    {
+      return cnv[ i ].to.ch;
+    }
+  }
+  return ch;
+}
+
+-------------------------
+
+#include <iostream>
+
+int main()
+{
+  int x = 23;
+  int* p = &x;
+  std::cout << p << std::endl;
+  *p = 17;
+  std::cout << x << std::endl;
+}
+
+-------------------------
+
+#include <iostream>
+
+int main()
+{
+  int x = 23;
+  int y = 7;
+  int* p = &x;
+  std::cout << p << std::endl;
+  *p = 17;
+  std::cout << x << std::endl;
+  p = &y;
+  *p = 11;
+  std::cout << y << std::endl;
+}
+
+-------------------------
+
+#include <iostream>
+
+int main()
+{
+  int x = 23;
+  int y = 7;
+  int* p = &x;
+  std::cout << p << std::endl;
+  *p = 17;
+  std::cout << x << std::endl;
+  p = &y;
+  std::cout << p << std::endl;
+  *p = 11;
+  std::cout << y << std::endl;
+  p = 0;
+  std::cout << y << std::endl;
+  std::cout << p << std::endl;
+}
+
+-------------------------
+
+#include <iostream>
+
+int main()
+{
+  int x = 23;
+  int y = 7;
+  int* p = &x;
+  std::cout << p << std::endl;
+  *p = 17;
+  std::cout << x << std::endl;
+  p = &y;
+  std::cout << p << std::endl;
+  *p = 11;
+  std::cout << y << std::endl;
+  p = 0;
+  std::cout << y << std::endl;
+  std::cout << p << std::endl;
+  if( p )
+  {
+    std::cout << *p << std::endl;
+  }
+}
+
+-------------------------
+
+#include <iostream>
+
+int main()
+{
+  int x = 5;
+  int y = 3;
+  const int n = 7;
+
+  const int* cip = &x;
+  std::cout << cip << ':' << *cip << std::endl;
+  cip = &y;
+  std::cout << cip << ':' << *cip << std::endl;
+  // *cip = 9; // ford. hiba
+  int* const icp = &y;
+  *icp = 4;
+  std::cout << icp << ':' << *icp << std::endl;
+  // icp = &x; // ford. hiba
+  const int* const cicp = &x;
+  std::cout << cicp << ':' << *cicp << std::endl;
+  //*cicp = 8; // ford. hiba
+  //cicp = &y; // ford. hiba
+}
+
+-------------------------
+
+double sum( int n, double (*a)( int ) )
+{
+  double ret = 0.;
+  for( int i = 0; i <= n; ++i )
+  {
+    ret += a( i );
+  }
+  return ret;
+}
+
+-------------------------
+
+#include <iostream>
+
+double sum( int, double (*)( int ) );
+
+double f( int i )
+{
+  return 1. / ( i + 1 );
+}
+
+int main()
+{
+  std::cout << sum( 7, f ) << std::endl;
+}
+
+-------------------------
+
+#include <iostream>
+
+double sum( int, double (*)( int ) );
+
+double f( int i )
+{
+  std::cout << "f: " << i << std::endl;
+  return 1. / ( i + 1 );
+}
+
+double g( int i )
+{
+  return i * 0.2;
+}
+
+int main()
+{
+  std::cout << sum( 7, f ) << std::endl;
+  std::cout << sum( 12, &f ) << std::endl;
+  std::cout << sum( 12, g ) << std::endl;
+}
+
+-------------------------
+
+#include <iostream>
+#include <string>
+
+int main()
+{
+  int x = 3;
+  void* p = &x;
+  std::cout << p << std::endl;
+  double d = 32.11;
+  p = &d;
+  std::cout << p << std::endl;
+  std::string s = "kukumuku";
+  p = &s;
+  std::cout << p << std::endl;
+}

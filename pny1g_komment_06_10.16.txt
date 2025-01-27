@@ -1,0 +1,803 @@
+#include <iostream>
+#include <cstdlib>
+
+void f( int i )
+{
+  int x = i;
+  std::cout << &x << std::endl;
+  int* p = static_cast<int*>( std::malloc( i * sizeof( int ) ) );
+  std::cout << p << std::endl;
+  p[ 0 ] = 76;
+  std::cout << p[ 0 ] << std::endl;
+  //std::free( p );
+}
+
+int main()
+{
+  f( 7 );
+}
+-------------------------------------------------
+==2277== 
+==2277== HEAP SUMMARY:
+==2277==     in use at exit: 28 bytes in 1 blocks
+==2277==   total heap usage: 3 allocs, 2 frees, 73,756 bytes allocated
+==2277== 
+==2277== LEAK SUMMARY:
+==2277==    definitely lost: 28 bytes in 1 blocks
+==2277==    indirectly lost: 0 bytes in 0 blocks
+==2277==      possibly lost: 0 bytes in 0 blocks
+==2277==    still reachable: 0 bytes in 0 blocks
+==2277==         suppressed: 0 bytes in 0 blocks
+==2277== Rerun with --leak-check=full to see details of leaked memory
+
+-------------------------
+
+#include <vector>
+#include <iostream>
+
+int main()
+{
+  const int max = 40;
+  std::vector<int> v;
+  for( int i = 0; i < max; ++i )
+  {
+    v.push_back( i );
+    std::cout << &v[ 0 ] << ' ' << v.size() << ' ' << v.capacity() << std::endl;
+  }
+  while( v.size() > 0 )
+  {
+    v.pop_back();
+    std::cout << &v[ 0 ] << ' ' << v.size() << ' ' << v.capacity() << std::endl;
+  }
+}
+
+-------------------------
+
+#include <iostream>
+#include <cstdlib>
+
+void f( int i )
+{
+  int x = i;
+  std::cout << &x << std::endl;
+  // int* p = static_cast<int*>( std::malloc( i * sizeof( int ) ) );
+  int* p = new int[ i ];
+  std::cout << p << std::endl;
+  p[ 0 ] = 76;
+  std::cout << p[ 0 ] << std::endl;
+  // delete [] p;
+  p = 0;
+  p = &x;
+}
+
+int main()
+{
+  f( 7 );
+}
+-------------------------------------------
+==2493== HEAP SUMMARY:
+==2493==     in use at exit: 28 bytes in 1 blocks
+==2493==   total heap usage: 3 allocs, 2 frees, 73,756 bytes allocated
+==2493== 
+==2493== LEAK SUMMARY:
+==2493==    definitely lost: 28 bytes in 1 blocks
+==2493==    indirectly lost: 0 bytes in 0 blocks
+==2493==      possibly lost: 0 bytes in 0 blocks
+==2493==    still reachable: 0 bytes in 0 blocks
+==2493==         suppressed: 0 bytes in 0 blocks
+==2493== Rerun with --leak-check=full to see details of leaked memory
+
+-------------------------
+
+#include <iostream>
+#include <cstdlib>
+
+void f( int i )
+{
+  int x = i;
+  std::cout << &x << std::endl;
+  // int* p = static_cast<int*>( std::malloc( i * sizeof( int ) ) );
+  int* p = new int( i );
+  std::cout << p << std::endl;
+  p[ 0 ] = 76;
+  std::cout << p[ 0 ] << std::endl;
+  delete [] p;
+  p = 0;
+  p = &x;
+}
+
+int main()
+{
+  f( 7 );
+}
+--------------------------------------------
+0x1ffefffe1c
+0x4db50c0
+76
+==2542== Mismatched free() / delete / delete []
+==2542==    at 0x483D74F: operator delete[](void*) (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2542==    by 0x1092F5: f(int) (in /home/patakino/cpp/a.out)
+==2542==    by 0x10932E: main (in /home/patakino/cpp/a.out)
+==2542==  Address 0x4db50c0 is 0 bytes inside a block of size 4 alloc'd
+==2542==    at 0x483BE63: operator new(unsigned long) (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2542==    by 0x10927E: f(int) (in /home/patakino/cpp/a.out)
+==2542==    by 0x10932E: main (in /home/patakino/cpp/a.out)
+==2542== 
+==2542== 
+==2542== HEAP SUMMARY:
+==2542==     in use at exit: 0 bytes in 0 blocks
+==2542==   total heap usage: 3 allocs, 3 frees, 73,732 bytes allocated
+
+-------------------------
+
+#include <string>
+#include <iostream>
+
+void f( int i )
+{
+  std::string* p = new std::string[ i ];
+  for( int j = 0; j < i; ++j )
+  {
+    p[ j ] = std::string( "Hello" );
+  }
+  delete p;
+}
+
+int main()
+{
+  f( 12 );
+}
+
+-------------------------
+
+==2635== Invalid free() / delete / delete[] / realloc()
+==2635==    at 0x483CFBF: operator delete(void*) (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2635==    by 0x1093E3: f(int) (sa.cpp:11)
+==2635==    by 0x1094B5: main (sa.cpp:16)
+==2635==  Address 0x4db4c88 is 8 bytes inside a block of size 392 alloc'd
+==2635==    at 0x483C583: operator new[](unsigned long) (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2635==    by 0x109320: f(int) (sa.cpp:6)
+==2635==    by 0x1094B5: main (sa.cpp:16)
+==2635== 
+==2635== 
+==2635== HEAP SUMMARY:
+==2635==     in use at exit: 392 bytes in 1 blocks
+==2635==   total heap usage: 2 allocs, 2 frees, 73,096 bytes allocated
+==2635== 
+==2635== LEAK SUMMARY:
+==2635==    definitely lost: 392 bytes in 1 blocks
+==2635==    indirectly lost: 0 bytes in 0 blocks
+==2635==      possibly lost: 0 bytes in 0 blocks
+==2635==    still reachable: 0 bytes in 0 blocks
+==2635==         suppressed: 0 bytes in 0 blocks
+==2635== Rerun with --leak-check=full to see details of leaked memory
+
+-------------------------
+
+#include <cstdlib>
+#include <string>
+#include <iostream>
+
+void f( int n )
+{
+  std::string s = "Hello";
+  s += " patakino";
+  for( int i = 0; i < n; ++i )
+  {
+    s.push_back( '!' );
+  }
+  std::cout << s << std::endl;
+}
+
+int main()
+{
+  f( 43 );
+}
+
+-------------------------
+
+#include <cstdlib>
+#include <string>
+#include <iostream>
+
+void f( int n )
+{
+  std::string* s = new std::string( "Hello" );
+  (*s) += " patakino";
+  for( int i = 0; i < n; ++i )
+  {
+    s->push_back( '!' );
+  }
+  std::cout << *s << std::endl;
+}
+
+int main()
+{
+  f( 43 );
+}
+-------------------------------------------------
+==2707== HEAP SUMMARY:
+==2707==     in use at exit: 93 bytes in 2 blocks
+==2707==   total heap usage: 5 allocs, 3 frees, 73,852 bytes allocated
+==2707== 
+==2707== LEAK SUMMARY:
+==2707==    definitely lost: 32 bytes in 1 blocks
+==2707==    indirectly lost: 61 bytes in 1 blocks
+==2707==      possibly lost: 0 bytes in 0 blocks
+==2707==    still reachable: 0 bytes in 0 blocks
+==2707==         suppressed: 0 bytes in 0 blocks
+==2707== Rerun with --leak-check=full to see details of leaked memory
+
+-------------------------
+
+#include <cstdlib>
+#include <iostream>
+#include <string>
+
+void f( int n )
+{
+  std::string* p = static_cast<std::string*>( std::malloc( sizeof( std::string ) ) );
+  *p = "Hello";
+  (*p) += " patakino";
+  for( int i = 0; i < n; ++i )
+  {
+    p->push_back( '!' );
+  }
+  std::free( p );
+}
+
+int main()
+{
+  f( 55 );
+}
+----------------------------------------------
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A411C: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_replace(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x109238: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A413C: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_replace(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x109238: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A4149: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_replace(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x109238: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A3377: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A42B5: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_replace(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x109238: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A2EC4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_create(unsigned long&, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A338D: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A42B5: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_replace(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x109238: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A2EC9: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_create(unsigned long&, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A338D: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A42B5: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_replace(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x109238: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A2ED1: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_create(unsigned long&, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A338D: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A42B5: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_replace(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x109238: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x483BE10: operator new(unsigned long) (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A338D: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A42B5: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_replace(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x109238: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A33DB: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A42B5: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_replace(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x109238: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A3401: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A42B5: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_replace(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x109238: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x483CF75: operator delete(void*) (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A3407: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A42B5: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_replace(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x109238: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Use of uninitialised value of size 8
+==2774==    at 0x49A41C6: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_replace(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x109238: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A4CCD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::operator+=(char const*) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A4B3B: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A2EC4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_create(unsigned long&, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A338D: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A4B82: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A2EC9: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_create(unsigned long&, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A338D: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A4B82: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A2ED1: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_create(unsigned long&, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A338D: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A4B82: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x483BE10: operator new(unsigned long) (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A338D: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A4B82: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A3394: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A4B82: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A339D: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A4B82: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x48429FA: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A4B82: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x4842BA1: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A4B82: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x4842A55: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A4B82: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x4842ABC: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A4B82: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x4842AFD: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A4B82: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x4842B0E: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A4B82: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x4842B3F: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A4B82: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x4842B55: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A4B82: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Use of uninitialised value of size 8
+==2774==    at 0x4842B60: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A4B82: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Use of uninitialised value of size 8
+==2774==    at 0x4842B63: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A4B82: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x4842B6E: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A4B82: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x4842A11: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33D3: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A4B82: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x4842B8B: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33D3: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A4B82: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x4842BA1: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33D3: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A4B82: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x4842A20: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33D3: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A4B82: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x4842B08: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33D3: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A4B82: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Use of uninitialised value of size 8
+==2774==    at 0x4842B63: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33D3: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A4B82: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A33DB: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A4B82: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Use of uninitialised value of size 8
+==2774==    at 0x49A4B5C: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_append(char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10924B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A3B7F: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A2EC4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_create(unsigned long&, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A338D: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A3BB4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A2EC9: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_create(unsigned long&, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A338D: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A3BB4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A2ED1: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_create(unsigned long&, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A338D: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A3BB4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A2ED6: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_create(unsigned long&, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A338D: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A3BB4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x483BE10: operator new(unsigned long) (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A338D: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A3BB4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A3394: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A3BB4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A339D: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A3BB4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x48429FA: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A3BB4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x4842BA1: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A3BB4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x4842A55: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A3BB4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x4842ABC: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A3BB4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x4842AE4: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A3BB4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x4842AFD: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A3BB4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x4842B0E: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A3BB4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Use of uninitialised value of size 8
+==2774==    at 0x4842B30: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A3BB4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Use of uninitialised value of size 8
+==2774==    at 0x4842B33: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A3BB4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x4842B3F: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A3BB4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x4842B55: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A3BB4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x49A33DB: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A3BB4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Use of uninitialised value of size 8
+==2774==    at 0x49A3B81: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Use of uninitialised value of size 8
+==2774==    at 0x49A3B8C: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Conditional jump or move depends on uninitialised value(s)
+==2774==    at 0x4842AA5: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A3BB4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Use of uninitialised value of size 8
+==2774==    at 0x4842AD6: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A3BB4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== Use of uninitialised value of size 8
+==2774==    at 0x4842AD9: memmove (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2774==    by 0x49A33AD: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_mutate(unsigned long, unsigned long, char const*, unsigned long) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x49A3BB4: std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::push_back(char) (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28)
+==2774==    by 0x10926B: f(int) (in /home/patakino/cpp/a.out)
+==2774==    by 0x109292: main (in /home/patakino/cpp/a.out)
+==2774== 
+==2774== 
+==2774== HEAP SUMMARY:
+==2774==     in use at exit: 113 bytes in 1 blocks
+==2774==   total heap usage: 7 allocs, 6 frees, 72,956 bytes allocated
+==2774== 
+==2774== LEAK SUMMARY:
+==2774==    definitely lost: 113 bytes in 1 blocks
+==2774==    indirectly lost: 0 bytes in 0 blocks
+==2774==      possibly lost: 0 bytes in 0 blocks
+==2774==    still reachable: 0 bytes in 0 blocks
+==2774==         suppressed: 0 bytes in 0 blocks
+==2774== Rerun with --leak-check=full to see details of leaked memory
+==2774== 
+==2774== Use --track-origins=yes to see where uninitialised values come from
+==2774== For lists of detected and suppressed errors, rerun with: -s
+==2774== ERROR SUMMARY: 269 errors from 64 contexts (suppressed: 0 from 0)
+
+-------------------------
+
+#include <iostream>
+
+void f( int n )
+{
+  int* p = new int[ n ];
+  p[ 0 ] = 23;
+  std::cout << p << std::endl;
+  delete [] p;
+  delete [] p;
+}
+
+int main()
+{
+  f( 4 );
+}
+
+-------------------------
+
+0x55a98df56eb0
+free(): double free detected in tcache 2
+Aborted (core dumped)
+
+==2835== Command: ./a.out
+==2835== 
+0x4db4c80
+==2835== Invalid free() / delete / delete[] / realloc()
+==2835==    at 0x483D74F: operator delete[](void*) (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2835==    by 0x10927C: f(int) (df.cpp:9)
+==2835==    by 0x109291: main (df.cpp:14)
+==2835==  Address 0x4db4c80 is 0 bytes inside a block of size 16 free'd
+==2835==    at 0x483D74F: operator delete[](void*) (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2835==    by 0x109269: f(int) (df.cpp:8)
+==2835==    by 0x109291: main (df.cpp:14)
+==2835==  Block was alloc'd at
+==2835==    at 0x483C583: operator new[](unsigned long) (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2835==    by 0x109220: f(int) (df.cpp:5)
+==2835==    by 0x109291: main (df.cpp:14)
+==2835== 
+==2835== 
+==2835== HEAP SUMMARY:
+==2835==     in use at exit: 0 bytes in 0 blocks
+==2835==   total heap usage: 3 allocs, 4 frees, 73,744 bytes allocated
+
+-------------------------
+
+#include <iostream>
+
+void f()
+{
+  int s = 6;
+  int* p = &s;
+  delete p;
+}
+
+int main()
+{
+  f();
+}
+
+------------------------------------
+
+Segmentation fault (core dumped)
+patakino@pataki-latitude5300:~/cpp$ valgrind ./a.out 
+==2881== Memcheck, a memory error detector
+==2881== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==2881== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==2881== Command: ./a.out
+==2881== 
+==2881== Invalid free() / delete / delete[] / realloc()
+==2881==    at 0x483CFBF: operator delete(void*) (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2881==    by 0x1091E3: f() (in /home/patakino/cpp/a.out)
+==2881==    by 0x109207: main (in /home/patakino/cpp/a.out)
+==2881==  Address 0x1ffefffe1c is on thread 1's stack
+==2881==  in frame #1, created by f() (???:)
+==2881== 
+==2881== 
+==2881== HEAP SUMMARY:
+==2881==     in use at exit: 0 bytes in 0 blocks
+==2881==   total heap usage: 1 allocs, 2 frees, 72,704 bytes allocated
+==2881== 
+==2881== All heap blocks were freed -- no leaks are possible
+
+-------------------------
+
+#include <iostream>
+
+int s = 5;
+
+void f()
+{
+  int* p = &s;
+  delete p;
+}
+
+int main()
+{
+  f();
+}
+---------------------------------
+free(): invalid size
+Aborted (core dumped)
+--------------------------------
+==2911== Invalid free() / delete / delete[] / realloc()
+==2911==    at 0x483CFBF: operator delete(void*) (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==2911==    by 0x1091B0: f() (in /home/patakino/cpp/a.out)
+==2911==    by 0x1091C0: main (in /home/patakino/cpp/a.out)
+==2911==  Address 0x10c010 is 0 bytes inside data symbol "s"
+==2911== 
+==2911== 
+==2911== HEAP SUMMARY:
+==2911==     in use at exit: 0 bytes in 0 blocks
+==2911==   total heap usage: 1 allocs, 2 frees, 72,704 bytes allocated

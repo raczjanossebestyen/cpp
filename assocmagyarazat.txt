@@ -1,0 +1,6 @@
+Valami olyasmi, hogy írj egy osztályt, amiben egy T típusokat tartalmazó Cont adatszerkezet,
+K típusú kulcsokkal tudsz “másodlagosan” indexelni.
+Bónuszként írd meg úgy, hogy egy Comp template paraméteren keresztül meg tudd adni,
+hogy hogy legyen az egyenlőségvizsgálat.
+Legyen konstruktora, lehessen hozzáadni, meg legyen find művelet,
+ami ha nem találja a keresett kulcsot, hozza létre.
